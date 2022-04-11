@@ -1,6 +1,6 @@
 Temporary BackUp solution
 
-- Script app.js
+- **Script app.js**
 
 Script app.js will create a new GeoFabric on the destination tenant, clone all data and configuration from the source tenant, and save it to destination GF. This should be a temporary solution for quick backup recovery. This script aims to create production DB clones every day so that production DB can be quickly recovered if necessary.
 The script is designed for execution once daily.
@@ -18,7 +18,7 @@ There is two way to use backup fabrics.
 2. Run reverse clone script to wipe production fabric and then clone data and configuration from backup fabric.
 
 
-- exportDBtoJSON.js
+- **exportDBtoJSON.js**
 
 exportDBtoJSON.js will export all data from fabric to a JSON file called data.json and all configurations in config.json.
 
