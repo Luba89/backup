@@ -18,6 +18,7 @@ const client2 = new jsc8({
   apiKey: apiKey2,
   fabricName,
 });
+//Timeout function
 const sleep = (milliseconds) => {
   console.log(`${milliseconds / 1000} seconds timeout`);
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -79,7 +80,7 @@ const cloneIndexes = async function () {
     console.log(e.response.body);
   }
 };
-
+//This function will clone the collections to destination fabric; it will not clone data
 const cloneCollections = async function () {
   const collections = await client1.listCollections(true);
   try {
@@ -117,7 +118,7 @@ const cloneCollections = async function () {
     console.log(e.response.body);
   }
 };
-
+//Pulling data from from source fabric
 const pullData = async function () {
   let data = [];
   const batchSize = 1000;
@@ -152,6 +153,7 @@ const pullData = async function () {
     console.log(e);
   }
 };
+//This function will insert data into destination fabric
 const insertData = async function () {
   try {
     console.log("Cloning data is started");
@@ -182,6 +184,8 @@ const insertData = async function () {
     console.log(e);
   }
 };
+//Cloning graphs configuration on backup GF. It only save graphs configuration into graphs collection.
+
 const cloneGraph = async function () {
   const graphs = await client1.getGraphs();
   let arr = [];
@@ -198,6 +202,7 @@ const cloneGraph = async function () {
     console.log(e);
   }
 };
+//This function will clone restqls
 const cloneRestqls = async function () {
   try {
     const listOfCreatedRestql = await client1.getRestqls();
