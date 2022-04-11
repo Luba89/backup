@@ -2,15 +2,15 @@ Temporary BackUp solution
 
 - **Script app.js**
 
-Script app.js will create a new GeoFabric on the destination tenant, clone all data and configuration from the source tenant, and save it to destination GF. This should be a temporary solution for quick backup recovery. This script aims to create production DB clones every day so that production DB can be quickly recovered if necessary.
+Script app.js will create a new GeoFabric on the destination tenant, clone all data and configuration from the source tenant, and save it to destination GF. This should be a temporary solution for quick backup recovery. This script aims to create productionDB clones every day so that production DB can be quickly recovered if necessary.
 The script is designed for execution once daily.
 Script function:
 
 1. Create GeoFabric on the destination tenant
-2. Cloning data and configuration of collection.
+2. Cloning data and configuration of collections.
 3. Saving all indexes configuration in a collection called indexes
 4. Saving all graphs configuration in a collection called graphs
-5. Cloning rentals
+5. Cloning restqls
 6. Deleting GF backups older than ten days
 
 There is two way to use backup fabrics.
