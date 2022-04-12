@@ -1,16 +1,19 @@
 const jsc8 = require("jsc8");
+
+
 ///////////////////////////////////// User configuration
-const fabricName = ""; //
-const url = "";
-const apiKey = "";
+const fabricName = ""; //Name of fabric
+const url = ""; //Federation URL
+const apiKey = "";// API key
 //////////////////////////////////////////
 
+//Connection
 const client = new jsc8({
   url,
   apiKey,
   fabricName,
 });
-
+// This function will recreate indexes from "indexes" collection
 const recreateIndexes = async function () {
   const docs = await client.getDocumentMany("indexes");
   let arr = [];
@@ -43,12 +46,13 @@ const recreateIndexes = async function () {
         });
       }
     }
-    console.log("Index cloning process is DONE!");
+    console.log("The index recreating process is DONE!");
   } catch (e) {
     console.log(e.response.body);
-    console.log("Something went wrong with index cloning process");
+    console.log("Something went wrong with index recreating process");
   }
 };
+ //This function will recreate graphs from "graphs" collection
 const recreateGraphs = async function () {
   try {
     const graphs = await client.getDocumentMany("graphs");
