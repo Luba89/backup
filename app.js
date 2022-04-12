@@ -1,13 +1,15 @@
 const jsc8 = require("jsc8");
 ///////////////////////////////////// User configuration
-const fabricName = "_system"; //
-const url = "";
-const apiKey1 = "";
-const apiKey2 = "";
+const fabricName = "_system";
+const url = ""; //federation URL
+const apiKey1 = "";   //API key of source tenant
+const apiKey2 = "";   //API key of destination tenant
 const apiKey2ID = ""; //ID of APIkey2/ name of API key
 //////////////////////////////////////////
 let obj = new Object();
 let newGFname = "";
+
+//Connection to source and destination tenant
 const client1 = new jsc8({
   url,
   apiKey: apiKey1,
@@ -18,7 +20,8 @@ const client2 = new jsc8({
   apiKey: apiKey2,
   fabricName,
 });
-//Timeout function
+
+//Timeout function, safety measure for slowing down cloning process
 const sleep = (milliseconds) => {
   console.log(`${milliseconds / 1000} seconds timeout`);
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -80,7 +83,7 @@ const cloneIndexes = async function () {
     console.log(e.response.body);
   }
 };
-//This function will clone the collections to destination fabric; it will not clone data
+//This function will clone the collections to destination fabric; This function do not clone data
 const cloneCollections = async function () {
   const collections = await client1.listCollections(true);
   try {
@@ -118,6 +121,7 @@ const cloneCollections = async function () {
     console.log(e.response.body);
   }
 };
+
 //Pulling data from from source fabric
 const pullData = async function () {
   let data = [];
@@ -153,6 +157,7 @@ const pullData = async function () {
     console.log(e);
   }
 };
+
 //This function will insert data into destination fabric
 const insertData = async function () {
   try {
@@ -184,8 +189,8 @@ const insertData = async function () {
     console.log(e);
   }
 };
-//Cloning graphs configuration on backup GF. It only save graphs configuration into graphs collection.
 
+//Cloning graphs configuration on backup GF. It only save graphs configuration into graphs collection.
 const cloneGraph = async function () {
   const graphs = await client1.getGraphs();
   let arr = [];
@@ -202,6 +207,7 @@ const cloneGraph = async function () {
     console.log(e);
   }
 };
+
 //This function will clone restqls
 const cloneRestqls = async function () {
   try {
@@ -218,7 +224,7 @@ const cloneRestqls = async function () {
 
 // 10 days is  ~900 000 000 ms, this function will deleted all GF that are older than 10 days.
 const deletingOldVersionOfGF = async function () {
-  let timeToDelete = 10000; // ~10 days
+  let timeToDelete = 900000000; //in ms = ~10 days
   try {
     client2.useFabric(fabricName);
 
