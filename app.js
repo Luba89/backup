@@ -4,7 +4,7 @@ const fabricName = "_system"; //
 const url = "";
 const apiKey1 = "";
 const apiKey2 = "";
-const apiKey2ID = ""; //ID of APIkey2
+const apiKey2ID = ""; //ID of APIkey2/ name of API key
 //////////////////////////////////////////
 let obj = new Object();
 let newGFname = "";
