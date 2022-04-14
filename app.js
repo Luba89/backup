@@ -238,7 +238,7 @@ const runInSeries = async () => {
   for (const fn of list) {
     await fn(); // call function to get returned Promise
   }
-  console.log(`${(Date.now() - start) / 1000 / 60} hours`);
+  console.log(`${(Date.now() - start) / 1000 / 60/60} hours`);
 
 };
 runInSeries();
