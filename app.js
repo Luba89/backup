@@ -49,7 +49,7 @@ const createGF = async function () {
     );
     client2.useFabric(newGFname);
     console.log("GeoFabric is created!");
-    await sleep(5000);
+    await sleep(2000);
   } catch (e) {
     console.log(e);
     console.log(
@@ -141,10 +141,12 @@ const pullData = async function () {
         //We change the offset for each iteration
         let offset = i * batchSize;
         //Query part before ${collection_name} and after ${batch Size} can be changed. After ${batchSize} must come Return part of query.
-        await sleep(2000);
-        query = `FOR doc IN ${name} limit ${offset}, ${batchSize} return doc`;
-        const cursor = await client1.query(query, {}, { batchSize: batchSize });
-        data.push.apply(data, cursor._result);
+        await sleep(100);
+        // query = `FOR doc IN ${name} limit ${offset}, ${batchSize} return doc`;
+        //  const cursor = await client1.query(query, {}, { batchSize: batchSize });
+        const cursor = await client1.exportDataByCollectionName(name, { offset: offset, limit: batchSize });
+
+        data.push.apply(data, cursor.result);
         console.log(`Collection "${name}" is loading ${i + 1} of ${num}`);
       }
       obj[name] = data;
@@ -175,7 +177,7 @@ const insertData = async function () {
       const num = Math.ceil(count / limit);
       let coll = i.name;
       for (i = 0; i < num; i++) {
-        await sleep(5000);
+        await sleep(500);
         let b = insert.slice(a, bat);
         await client2.importDocuments(coll, b, true, "_key", true);
         a = a + limit;
@@ -183,7 +185,7 @@ const insertData = async function () {
         console.log(`Collection "${coll}" is cloning ${i + 1} of ${num}`);
       }
     }
-    console.log("Data is cloned to new fabric");
+    console.log("Data is cloned to new fabric",newGFname);
   } catch (e) {
     console.log("There is error in data cloning process");
     console.log(e);
