@@ -141,7 +141,7 @@ const cloneData = async function () {
           limit: batchSize,
         });
         console.log(
-          `Data pulled from ${name}, ${i + 1} of ${num}, server code: ${
+          `Data pulled from source fabric, collection ${name}, ${i + 1} of ${num}, server code: ${
             cursor.code
           }`
         );
@@ -154,7 +154,7 @@ const cloneData = async function () {
           true
         );
         console.log(
-          `Data inserted in ${name}, ${i + 1} of ${num} >>> created: ${
+          `Data inserted in destination fabric, collection ${name}, ${i + 1} of ${num} >>> created: ${
             insert.result.created
           }`
         );
