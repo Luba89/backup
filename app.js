@@ -6,7 +6,6 @@ const apiKey1 = "";   //API key of source tenant
 const apiKey2 = "";   //API key of destination tenant
 const apiKey2ID = ""; //ID of APIkey2/ name of API key
 //////////////////////////////////////////
-let obj = new Object();
 let newGFname = "";
 
 //Connection to source and destination tenant
@@ -122,74 +121,51 @@ const cloneCollections = async function () {
   }
 };
 
-//Pulling data from from source fabric
-const pullData = async function () {
-  let data = [];
+//Cloning data
+const cloneData = async function () {
   const batchSize = 1000;
   let collections = await client1.listCollections(true);
   collections = collections.filter((item) => item.collectionModel !== "DYNAMO");
 
   try {
-    console.log("Loading data is started!");
     for (let i of collections) {
-      //Determining collection size and number of times that we are going to call query
       let name = i.name;
       const { count } = await client1.collection(name).count();
       const num = Math.ceil(count / batchSize);
-
       for (i = 0; i < num; i++) {
         //We change the offset for each iteration
         let offset = i * batchSize;
-        //Query part before ${collection_name} and after ${batch Size} can be changed. After ${batchSize} must come Return part of query.
         await sleep(100);
-        // query = `FOR doc IN ${name} limit ${offset}, ${batchSize} return doc`;
-        //  const cursor = await client1.query(query, {}, { batchSize: batchSize });
-        const cursor = await client1.exportDataByCollectionName(name, { offset: offset, limit: batchSize });
-
-        data.push.apply(data, cursor.result);
-        console.log(`Collection "${name}" is loading ${i + 1} of ${num}`);
+        let cursor = await client1.exportDataByCollectionName(name, {
+          offset: offset,
+          limit: batchSize,
+        });
+        console.log(
+          `Data pulled from ${name}, ${i + 1} of ${num}, server code: ${
+            cursor.code
+          }`
+        );
+        await sleep(200);
+        let insert = await client2.importDocuments(
+          name,
+          cursor.result,
+          true,
+          "_key",
+          true
+        );
+        console.log(
+          `Data inserted in ${name}, ${i + 1} of ${num} >>> created: ${
+            insert.result.created
+          }`
+        );
       }
-      obj[name] = data;
-      data = [];
     }
-    console.log("Data is loaded");
-    await sleep(5000);
   } catch (e) {
-    console.log("Data cant be loaded");
     console.log(e);
-  }
-};
-
-//This function will insert data into destination fabric
-const insertData = async function () {
-  try {
-    console.log("Cloning data is started");
-    let collections = await client1.listCollections(true);
-    collections = collections.filter(
-      (item) => item.collectionModel !== "DYNAMO"
-    );
-    for (let i of collections) {
-      let limit = 10000;
-      let bat = 10000;
-      let a = 0;
-      let insert = obj[i.name];
-      let count = insert.length;
-      const num = Math.ceil(count / limit);
-      let coll = i.name;
-      for (i = 0; i < num; i++) {
-        await sleep(500);
-        let b = insert.slice(a, bat);
-        await client2.importDocuments(coll, b, true, "_key", true);
-        a = a + limit;
-        bat = bat + limit;
-        console.log(`Collection "${coll}" is cloning ${i + 1} of ${num}`);
-      }
-    }
-    console.log("Data is cloned to new fabric",newGFname);
-  } catch (e) {
     console.log("There is error in data cloning process");
-    console.log(e);
+
   }
+  console.log("Cloning process is finished",newGFname);
 };
 
 //Cloning graphs configuration on backup GF. It only save graphs configuration into graphs collection.
@@ -255,8 +231,7 @@ const runInSeries = async () => {
     cloneIndexes,
     cloneRestqls,
     cloneGraph,
-    pullData,
-    insertData,
+    cloneData,
     deletingOldVersionOfGF,
   ];
   for (const fn of list) {
