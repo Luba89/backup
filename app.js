@@ -234,8 +234,11 @@ const runInSeries = async () => {
     cloneData,
     deletingOldVersionOfGF,
   ];
+  let start = Date.now()
   for (const fn of list) {
     await fn(); // call function to get returned Promise
   }
+  console.log(`${(Date.now() - start) / 1000 / 60} hours`);
+
 };
 runInSeries();
