@@ -26,20 +26,28 @@ const recreateIndexes = async function () {
       arr.push(i);
     }
   }
+
   try {
     for (let i of arr) {
       if (i.type === "fulltext") {
         let name = i.id.split("/")[0];
-        await client.addFullTextIndex(name, i.fields);
+        await client.addFullTextIndex(name, i.fields, {
+          name: i.name,
+          minLength: i.minLength,
+        });
       } else if (i.type === "geo") {
         let name = i.id.split("/")[0];
-        await client.addGeoIndex(name, i.fields);
+        await client.addGeoIndex(name, i.fields, {
+          name: i.name,
+          geoJson: i.geoJson,
+        });
       } else if (i.type === "ttl") {
         let name = i.id.split("/")[0];
-        await client.addTtlIndex(name, i.fields, i.expireAfter);
+        await client.addTtlIndex(name, i.fields, i.expireAfter, i.name);
       } else if (i.type === "persistent") {
         let name = i.id.split("/")[0];
         await client.addPersistentIndex(name, i.fields, {
+          name: i.name,
           unique: i.unique ? true : false,
           sparse: i.sparse ? true : false,
           deduplicate: i.deduplicate ? true : false,
@@ -52,12 +60,11 @@ const recreateIndexes = async function () {
     console.log("Something went wrong with index recreating process");
   }
 };
- //This function will recreate graphs from "graphs" collection
+//This function will recreate graphs from "graphs" collection
 const recreateGraphs = async function () {
   try {
     const graphs = await client.getDocumentMany("graphs");
     for (let i of graphs) {
-      console.log(i);
       const newGraph = client.graph(i.name);
       const info = await newGraph.create({
         edgeDefinitions: i.edgeDefinitions,
@@ -70,5 +77,11 @@ const recreateGraphs = async function () {
     console.log(e.response.body);
   }
 };
-recreateGraphs();
-recreateIndexes();
+
+const runInSeries = async () => {
+  const list = [recreateGraphs, recreateIndexes];
+  for (const fn of list) {
+    await fn(); // call function to get returned Promise
+  }
+};
+runInSeries();
