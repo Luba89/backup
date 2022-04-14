@@ -177,7 +177,7 @@ const cloneGraph = async function () {
       const graph = await client1.getGraph(i.name);
       arr.push(graph);
     }
-    client2.createCollection("graphs");
+    await client2.createCollection("graphs");
     const insertedDocs = await client2.insertDocumentMany("graphs", arr);
     console.log(`All Graphs are cloned!`);
   } catch (e) {
