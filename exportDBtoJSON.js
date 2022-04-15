@@ -19,7 +19,7 @@ const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
-//Cloning index configuration on backup GF. It only save index configuration.
+//Cloning indexes configuration
 const cloneIndexes = async function () {
   try {
     const collections = await client.listCollections(true);
@@ -73,20 +73,20 @@ const pullData = async function () {
       const num = Math.ceil(count / batchSize);
 
       for (i = 0; i < num; i++) {
-        //We change the offset for each iteration
         let offset = i * batchSize;
-        //Query part before ${collection_name} and after ${batch Size} can be changed. After ${batchSize} must come Return part of query.
-        await sleep(2000);
-        query = `FOR doc IN ${name} limit ${offset}, ${batchSize} return doc`;
-        const cursor = await client.query(query, {}, { batchSize: batchSize });
-        data.push.apply(data, cursor._result);
+        await sleep(200);
+        let cursor = await client.exportDataByCollectionName(name, {
+          offset: offset,
+          limit: batchSize,
+        });
+        data.push.apply(data, cursor.result);
         console.log(`Collection "${name}" is loading ${i + 1} of ${num}`);
       }
       dataOBJ[name] = data;
       data = [];
     }
     console.log("Data is loaded");
-    await sleep(5000);
+    await sleep(500);
   } catch (e) {
     console.log("Data cant be loaded");
     console.log(e);
