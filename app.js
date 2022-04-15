@@ -141,9 +141,9 @@ const cloneData = async function () {
           limit: batchSize,
         });
         console.log(
-          `Data pulled from source fabric, collection ${name}, ${i + 1} of ${num}, server code: ${
-            cursor.code
-          }`
+          `Data pulled from source fabric, collection ${name}, ${
+            i + 1
+          } of ${num}, server code: ${cursor.code}`
         );
         await sleep(200);
         let insert = await client2.importDocuments(
@@ -154,18 +154,17 @@ const cloneData = async function () {
           true
         );
         console.log(
-          `Data inserted in destination fabric, collection ${name}, ${i + 1} of ${num} >>> created: ${
-            insert.result.created
-          }`
+          `Data inserted in destination fabric, collection ${name}, ${
+            i + 1
+          } of ${num} >>> created: ${insert.result.created}`
         );
       }
     }
   } catch (e) {
     console.log(e);
     console.log("There is error in data cloning process");
-
   }
-  console.log("Cloning process is finished",newGFname);
+  console.log("Cloning process is finished", newGFname);
 };
 
 //Cloning graphs configuration on backup GF. It only save graphs configuration into graphs collection.
@@ -234,11 +233,11 @@ const runInSeries = async () => {
     cloneData,
     deletingOldVersionOfGF,
   ];
-  let start = Date.now()
+  let start = Date.now();
   for (const fn of list) {
     await fn(); // call function to get returned Promise
   }
   console.log(`${(Date.now() - start) / 1000 / 60/60} hours`);
-
 };
 runInSeries();
+
